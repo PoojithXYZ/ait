@@ -19,7 +19,7 @@ class My_XGB_Model:
         self.params = {
             'objective': 'reg:squarederror',
             'eval_metric': 'rmse',
-            'n_estimators': 700,
+            'n_estimators': 70,
             'learning_rate': 0.08780929167510496,
             'max_depth': 7,
             'reg_alpha': 0.0,
