@@ -12,7 +12,7 @@ class My_Cat_B_Model:
         self.categorical_cols = None
         
         self.params = {
-            'iterations': 700,
+            'iterations': 7,
             'learning_rate': 0.08780929167510496,
             'depth': 7,
             'l2_leaf_reg': 0.04063851295419513,
@@ -87,19 +87,18 @@ class My_Cat_B_Model:
         X_test = test_df.drop(columns=cols_to_drop, axis=1, errors='ignore')
 
         predictions = self.model.predict(X_test)
-        result = pl.DataFrame({
-            'Id': test_df['Id'], 
+        result = pd.DataFrame({
+            # 'Id': test_df['Id'],
             'utility_agent1': predictions
         })
-        
         return result
 
 
 if __name__ == "__main__":
     model = My_Cat_B_Model()
-    model.train()    
+    # model.train()    
     result = model.predict()
     print(result)
-    result = model.predict(test_data='test.csv')
-    print(result)
+    # result = model.predict(test_data='test.csv')
+    # print(result)
 

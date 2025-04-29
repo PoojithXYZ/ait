@@ -91,8 +91,8 @@ class My_XGB_Model:
         numeric_cols = test_df.select_dtypes(include=['float64', 'int64']).columns.tolist()
         test_df[numeric_cols] = test_df[numeric_cols].fillna(test_df[numeric_cols].mean())
 
-        categorical_cols = test_df.select_dtypes(include=['object']).columns.tolist()
-        for col in categorical_cols:
+        self.categorical_cols = test_df.select_dtypes(include=['object']).columns.tolist()
+        for col in self.categorical_cols:
             mode_series = test_df[col].mode().dropna()
             if not mode_series.empty:
                 mode = mode_series.iloc[0]
@@ -131,8 +131,8 @@ class My_XGB_Model:
             X_test_encoded = X_test_encoded[self.train_columns]
 
         predictions = self.model.predict(X_test_encoded)
-        result = pl.DataFrame({
-            'Id': test_df['Id'],
+        result = pd.DataFrame({
+            # 'Id': test_df['Id'],
             'utility_agent1': predictions
         })
 
@@ -140,9 +140,9 @@ class My_XGB_Model:
 
 if __name__ == "__main__":
     model = My_XGB_Model()
-    model.train()
+    # model.train()
     result = model.predict()
     print(result)
-    result = model.predict(test_data='test.csv')
-    print(result)
+    # result = model.predict(test_data='test.csv')
+    # print(result)
 
