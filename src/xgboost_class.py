@@ -6,6 +6,7 @@ import xgboost as xgb
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 # from sklearn.metrics import root_mean_squared_error as rmse
+import pickle
 
 
 class My_XGB_Model:
@@ -19,7 +20,7 @@ class My_XGB_Model:
         self.params = {
             'objective': 'reg:squarederror',
             'eval_metric': 'rmse',
-            'n_estimators': 70,
+            'n_estimators': 7,
             'learning_rate': 0.08780929167510496,
             'max_depth': 7,
             'reg_alpha': 0.0,
@@ -51,6 +52,7 @@ class My_XGB_Model:
             train_df[col] = train_df[col].astype(str)
 
         self.categorical_cols = [col for col in categorical_cols if col in train_df.columns]
+        pickle.dump(self.categorical_cols, open('categorical_cols.pkl', 'wb'))
 
         cols_to_drop = ['num_draws_agent1', 'num_losses_agent1', 'num_wins_agent1', 'utility_agent1', 'Id'] # Added 'Id' for consistency
         X = train_df.drop(columns=cols_to_drop, axis=1, errors='ignore')
@@ -63,8 +65,10 @@ class My_XGB_Model:
                 le = LabelEncoder()
                 X_encoded[col] = le.fit_transform(X_encoded[col])
                 self.label_encoders[col] = le
+        pickle.dump(self.label_encoders, open('label_encoders.pkl', 'wb'))
 
         self.train_columns = X_encoded.columns.tolist() # Store the columns after encoding
+        pickle.dump(self.train_columns, open('train_columns.pkl', 'wb'))
         X_train, X_eval, y_train, y_eval = train_test_split(X_encoded, y, test_size=0.2, random_state=42)
 
         print("Training the model...")
@@ -79,14 +83,11 @@ class My_XGB_Model:
 
         self.model.save_model('xgb_OF.json')
 
-    def predict(self, test_data=None):
+    def predict(self, test_data='test.csv'):
         self.model = xgb.XGBRegressor()
         self.model.load_model('xgb_OF.json')
 
-        if test_data is None:
-            test_df = pl.read_csv(os.path.join(self.path_to_data, 'sample.csv')).to_pandas()
-        else:
-            test_df = pl.read_csv(os.path.join(self.path_to_data, test_data)).to_pandas()
+        test_df = pl.read_csv(os.path.join(self.path_to_data, test_data)).to_pandas()
 
         numeric_cols = test_df.select_dtypes(include=['float64', 'int64']).columns.tolist()
         test_df[numeric_cols] = test_df[numeric_cols].fillna(test_df[numeric_cols].mean())
@@ -105,6 +106,8 @@ class My_XGB_Model:
         X_test = test_df.drop(columns=cols_to_drop, axis=1, errors='ignore')
 
         # Encode categorical features in the test set
+        self.label_encoders = pickle.load(open('label_encoders.pkl', 'rb'))
+        self.train_columns = pickle.load(open('train_columns.pkl', 'rb'))
         X_test_encoded = X_test.copy()
         for col in self.categorical_cols:
             if col in X_test_encoded.columns and col in self.label_encoders:
@@ -113,9 +116,8 @@ class My_XGB_Model:
                 # Handle cases where a new category appears in test data
                 X_test_encoded[col] = X_test_encoded[col].astype('category').cat.codes
             elif col not in X_test_encoded.columns and col in self.label_encoders:
-                # Handle cases where a categorical column from training is missing in test
-                X_test_encoded[col] = np.nan # Or some other appropriate handling
-                X_test_encoded[col] = X_test_encoded[col].fillna(-1) # Example filling
+                X_test_encoded[col] = np.nan
+                X_test_encoded[col] = X_test_encoded[col].fillna(-1) 
 
         # Ensure consistent column order
         if self.train_columns is not None:
@@ -135,7 +137,6 @@ class My_XGB_Model:
             # 'Id': test_df['Id'],
             'utility_agent1': predictions
         })
-
         return result
 
 if __name__ == "__main__":

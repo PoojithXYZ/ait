@@ -38,6 +38,7 @@ class My_Light_Model:
         # select categorical columns
         cols_with_object_as_val = train.select_dtypes(include='object').columns.tolist()
         categorical_cols = [col for col in train.columns if train[col].nunique() == 2 and train[col].dtype in ['object', 'int64', 'float64']]
+        pickle.dump(categorical_cols, open('cat_cols.pkl', 'wb'))
 
         # Convert selected columns to category type
         train[cols_with_object_as_val + categorical_cols] = train[cols_with_object_as_val + categorical_cols].astype('category')
@@ -70,9 +71,8 @@ class My_Light_Model:
         print("Mean RMSE:", np.mean(self.rmses))
         print("Training completed.")
 
-    def predict(self, test_data='test.csv'):
+    def predict(self, test_data='demo.csv'):
         test = pd.read_csv(f'{self.path_to_data}{test_data}')
-        y_train = test[self.target]
 
         print('dropping columns...')
         # Drop columns with unique values < 2 and unwanted columns
@@ -83,13 +83,12 @@ class My_Light_Model:
         print('selecting categorical columns...')
         # select categorical columns
         cols_with_object_as_val = test.select_dtypes(include='object').columns.tolist()
-        categorical_cols = [col for col in test.columns if test[col].nunique() == 2 and test[col].dtype in ['object', 'int64', 'float64']]
+        categorical_cols = pickle.load(open('cat_cols.pkl', 'rb'))
 
         # Convert selected columns to category type
         test[cols_with_object_as_val + categorical_cols] = test[cols_with_object_as_val + categorical_cols].astype('category')
         self.test_cols = test.columns
         self.categorical_features = cols_with_object_as_val + categorical_cols
-
 
         # # categorical_cols = [col for col in test.columns if test[col].nunique() == 2 and test[col].dtype in ['object', 'int64', 'float64']]
         # test[self.categorical_features] = test[self.categorical_features].astype('category')
@@ -116,7 +115,7 @@ class My_Light_Model:
 
 if __name__ == "__main__":
     model = My_Light_Model()
-    # print(model.train()
+    # model.train()
     print(model.predict())
     # print(model.predict('test.csv'))
 

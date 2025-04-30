@@ -61,7 +61,7 @@ class My_Cat_B_Model:
 
         self.model.save_model('cat_OF')
 
-    def predict(self, test_data=None):
+    def predict(self, test_data='test.csv'):
         self.model = CatBoostRegressor()
         self.model.load_model('cat_OF')
 
@@ -91,13 +91,14 @@ class My_Cat_B_Model:
             # 'Id': test_df['Id'],
             'utility_agent1': predictions
         })
-        return result
+        # print(result.shape)
+        return result.values.reshape(-1)
 
 
 if __name__ == "__main__":
     model = My_Cat_B_Model()
     # model.train()    
-    result = model.predict()
+    result = model.predict('demo.csv')
     print(result)
     # result = model.predict(test_data='test.csv')
     # print(result)
