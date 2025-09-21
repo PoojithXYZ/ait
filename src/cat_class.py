@@ -12,7 +12,7 @@ class My_Cat_B_Model:
         self.categorical_cols = None
         
         self.params = {
-            'iterations': 7,
+            'iterations': 700,
             'learning_rate': 0.08780929167510496,
             'depth': 7,
             'l2_leaf_reg': 0.04063851295419513,
@@ -64,11 +64,11 @@ class My_Cat_B_Model:
     def predict(self, test_data='test.csv'):
         self.model = CatBoostRegressor()
         self.model.load_model('cat_OF')
-
+        print(test_data, '------------------')
         if test_data is None:
             test_df = pl.read_csv(os.path.join(self.path_to_data, 'sample.csv')).to_pandas()
         else:
-            test_df = pl.read_csv(os.path.join(self.path_to_data, test_data)).to_pandas()
+            test_df = pl.read_csv(test_data).to_pandas()
 
         numeric_cols = test_df.select_dtypes(include=['float64', 'int64']).columns.tolist()
         test_df[numeric_cols] = test_df[numeric_cols].fillna(test_df[numeric_cols].mean())
@@ -92,13 +92,13 @@ class My_Cat_B_Model:
             'utility_agent1': predictions
         })
         # print(result.shape)
-        return result.values.reshape(-1)
+        return result
 
 
 if __name__ == "__main__":
     model = My_Cat_B_Model()
-    # model.train()    
-    result = model.predict('demo.csv')
+    model.train()    
+    result = model.predict('test.csv')
     print(result)
     # result = model.predict(test_data='test.csv')
     # print(result)

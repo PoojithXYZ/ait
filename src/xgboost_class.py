@@ -20,7 +20,7 @@ class My_XGB_Model:
         self.params = {
             'objective': 'reg:squarederror',
             'eval_metric': 'rmse',
-            'n_estimators': 7,
+            'n_estimators': 700,
             'learning_rate': 0.08780929167510496,
             'max_depth': 7,
             'reg_alpha': 0.0,
@@ -88,7 +88,7 @@ class My_XGB_Model:
         self.model.load_model('xgb_OF.json')
 
         test_df = pl.read_csv(os.path.join(self.path_to_data, test_data)).to_pandas()
-
+        print(test_data, len(test_df), '------------------')
         numeric_cols = test_df.select_dtypes(include=['float64', 'int64']).columns.tolist()
         test_df[numeric_cols] = test_df[numeric_cols].fillna(test_df[numeric_cols].mean())
 
@@ -141,7 +141,7 @@ class My_XGB_Model:
 
 if __name__ == "__main__":
     model = My_XGB_Model()
-    # model.train()
+    model.train()
     result = model.predict()
     print(result)
     # result = model.predict(test_data='test.csv')

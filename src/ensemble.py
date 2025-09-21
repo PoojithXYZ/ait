@@ -27,7 +27,7 @@ class Ensemble:
         xgb_predictions = self.xgb_model.predict(data_path)
         lgbm_predictions = self.lgbm_model.predict(data_path)
         catboost_predictions = self.catboost_model.predict(data_path)
-
+        # print(len(xgb_predictions), '------------------')
         self.base_preds = [xgb_predictions, lgbm_predictions, catboost_predictions]
         # return self.base_preds
 
@@ -69,28 +69,28 @@ if __name__ == "__main__":
     test_path = os.path.join(path_to_data, test_file)
 
     print(f"Loading data :")
-    # trainset = pd.read_csv(train_path)
+    trainset = pd.read_csv(train_path)
     testset = pd.read_csv(test_path)
 
-    # y = trainset['utility_agent1']
-    # X = trainset.drop(columns=['utility_agent1'])
+    y = trainset['utility_agent1']
+    X = trainset.drop(columns=['utility_agent1'])
     y_test = testset['utility_agent1']
     X_test = testset.drop(columns=['utility_agent1'])
     # X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # need paths not data frames .
     ensemble = Ensemble()
-    ensemble_pred_avg = ensemble.weighted_avg(test_file, weights=None)
-    print("Base Model Predictions (first 5):")
-    print(ensemble.base_preds[0].head(10).values.reshape(-1))
+    # ensemble_pred_avg = ensemble.weighted_avg(train_file, weights=None)
+    # print("Base Model Predictions (first 5):")
+    # print(ensemble.base_preds[0].head(10).values.reshape(-1))
 
-    print("\nWeighted Average Predictions (first 5):", ensemble_pred_avg)
-    # ensemble_avg_rsme = np.sqrt(mean_squared_error(y_test, ensemble_pred_avg))
+    # print("\nWeighted Average Predictions (first 5):", ensemble_pred_avg)
+    # ensemble_avg_rsme = np.sqrt(mean_squared_error(y, ensemble_pred_avg))
     # print("Weighted Average RMSE:", ensemble_avg_rsme)
 
-    # ensemble.fit_iso(train_file, y)
-    # ensemble_predictions_iso = ensemble.predict_iso('demo.csv')
-    # print("\nIsotonic Ensemble Predictions (first 5):", ensemble_predictions_iso[:5])
-    # ensemble_rmse_iso = np.sqrt(mean_squared_error(y_test, ensemble_predictions_iso))
-    # print("Isotonic Ensemble RMSE:", ensemble_rmse_iso)
+    # ensemble.fit_iso(train_path, y)
+    ensemble_predictions_iso = ensemble.predict_iso('test.csv')
+    print("\nIsotonic Ensemble Predictions (first 5):", ensemble_predictions_iso[:5])
+    ensemble_rmse_iso = np.sqrt(mean_squared_error(y_test, ensemble_predictions_iso, squared=False))
+    print("Isotonic Ensemble RMSE:", ensemble_rmse_iso)
 

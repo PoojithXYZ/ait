@@ -27,4 +27,4 @@ st.write(attr)
 
 st.header("Ludii Concepts : ")
 
-st.dataframe(pd.read_csv("data/concepts.csv"), use_container_width=True)
+st.dataframe(pd.read_csv("concepts.csv"), use_container_width=True)

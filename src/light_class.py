@@ -71,9 +71,9 @@ class My_Light_Model:
         print("Mean RMSE:", np.mean(self.rmses))
         print("Training completed.")
 
-    def predict(self, test_data='demo.csv'):
-        test = pd.read_csv(f'{self.path_to_data}{test_data}')
-
+    def predict(self, test_data='test.csv'):
+        test = pd.read_csv(test_data)
+        print(test_data, len(test), '------------------')
         print('dropping columns...')
         # Drop columns with unique values < 2 and unwanted columns
         cols_to_drop = [col for col in test.columns if test[col].nunique() < 2]
@@ -115,7 +115,7 @@ class My_Light_Model:
 
 if __name__ == "__main__":
     model = My_Light_Model()
-    # model.train()
+    model.train()
     print(model.predict())
     # print(model.predict('test.csv'))
 

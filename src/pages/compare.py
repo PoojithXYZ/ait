@@ -16,11 +16,10 @@ path_to_data = '/home/poojith-xyz/projects/ait/data/'
 
 st.title("Compare Your MCTS Agents")
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-if uploaded_file is not None:
 
-    with open(os.path.join(path_to_data, 'demo.csv'), "w", encoding="utf-8") as f:
+if uploaded_file is not None:
+    with open('demo.csv', "w", encoding="utf-8") as f:
         content = uploaded_file.getvalue()
-        # Decode the bytes to string and write to file
         content = content.decode("utf-8")
         f.write(content)
     print("Uploaded file:", uploaded_file)
@@ -35,7 +34,8 @@ if uploaded_file is not None:
     iso_preds = ensemble_model.predict_iso('demo.csv')
 
     st.write("Generating predictions...")
-    st.success("Predictions generated.") # Simple success message
+    st.success("Predictions generated.")
+
 
     st.write("Combining predictions...")
     predictions_df = pd.DataFrame({
